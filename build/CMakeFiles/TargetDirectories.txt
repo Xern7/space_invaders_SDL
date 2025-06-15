@@ -1,0 +1,3 @@
+/home/xern/projects/sdl-game/build/CMakeFiles/sdl-game.dir
+/home/xern/projects/sdl-game/build/CMakeFiles/edit_cache.dir
+/home/xern/projects/sdl-game/build/CMakeFiles/rebuild_cache.dir
