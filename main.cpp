@@ -108,6 +108,7 @@ int main() {
             }
         }
         SDL_SetRenderDrawColor(renderer, 0,0,0, 255);
+        SDL_RenderClear(renderer);
         SDL_RenderCopy(renderer, texture,NULL, &rect);
         bool change_dir = false;
         for(auto& en : enemies){
@@ -127,16 +128,34 @@ int main() {
         for(auto& bullet: bullets){
             SDL_RenderCopy(renderer, bullet_texture,NULL, &bullet);
         }
-        for(auto& bullet: bullets){
-            for(auto& enemy : enemies){
-                if(SDL_HasIntersection(&enemy, &bullet)){
+        for (auto it_b = bullets.begin(); it_b != bullets.end(); ) {
+            bool bullet_erased = false;
+
+            for (auto it_e = enemies.begin(); it_e != enemies.end(); ) {
+                if (SDL_HasIntersection(&*it_e, &*it_b)) {
+                    it_e = enemies.erase(it_e);
+                    it_b = bullets.erase(it_b);
+                    bullet_erased = true;
+                    break; // Bullet is used up, move to next bullet
+                } else {
+                    ++it_e;
                 }
             }
-            bullet.y -= 10;
+
+            if (!bullet_erased) {
+                it_b->y -= 10;
+                if (it_b->y < 0) {
+                    it_b = bullets.erase(it_b); // Remove off-screen bullets
+                } else {
+                    ++it_b;
+                }
+            }
         }
 
         SDL_RenderPresent(renderer);
-        SDL_RenderClear(renderer);
+        if(enemies.empty()){
+            break;
+        }
         frame_time = SDL_GetTicks() - elapsed;
         if(1000/FPS > frame_time){
             SDL_Delay((1000/FPS) - frame_time);
